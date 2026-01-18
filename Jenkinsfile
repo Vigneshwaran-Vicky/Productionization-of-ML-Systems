@@ -39,7 +39,7 @@ pipeline {
                 SET /A RETRIES-=1
                 IF %RETRIES% GTR 0 (
                     echo Waiting for service...
-                    timeout /t 3 /nobreak
+                    ping 127.0.0.1 -n 4 > nul
                     goto RETRY
                 )
 
