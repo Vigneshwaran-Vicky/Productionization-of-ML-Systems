@@ -23,41 +23,41 @@ pipeline {
 
         stage('Run Container and Wait for Service') {
             steps {
-                bat '''
-                REM Start container
+                bat """
                 docker run -d -p %APP_PORT%:%APP_PORT% --name %CONTAINER_NAME% %IMAGE_NAME%:latest
 
-                REM Wait for service to be up with retries
                 SET RETRIES=20
                 SET URL=http://localhost:%APP_PORT%/
 
                 :RETRY
-                curl %URL% > nul 2>&1
+                curl --fail %URL%
                 IF %ERRORLEVEL% EQU 0 (
                     echo Service is up!
                     goto SUCCESS
                 )
-                SET /A RETRIES=%RETRIES%-1
+
+                SET /A RETRIES-=1
                 IF %RETRIES% GTR 0 (
                     echo Waiting for service...
-                    TIMEOUT /T 3
-                    GOTO RETRY
+                    timeout /t 3 /nobreak
+                    goto RETRY
                 )
+
                 echo Service failed to start within timeout
                 exit /b 1
 
                 :SUCCESS
-                '''
+                """
             }
         }
     }
 
     post {
         always {
-            bat '''
+            bat """
             docker stop %CONTAINER_NAME% || exit 0
             docker rm %CONTAINER_NAME% || exit 0
-            '''
+            """
         }
     }
 }
