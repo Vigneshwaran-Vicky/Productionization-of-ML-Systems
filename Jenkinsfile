@@ -23,9 +23,9 @@ pipeline {
         stage('Run Container') {
             steps {
                 bat '''
-                docker run -d -p 8501:8501 --name %CONTAINER_NAME% %IMAGE_NAME%:latest
-                timeout /t 10
-                curl http://localhost:8501/
+                docker run -d -p 8501:8501 --name flight-price-ci-test flight-price-api:latest
+                ping 127.0.0.1 -n 16 > nul
+                curl --retry 10 --retry-delay 3 http://localhost:8501/
                 '''
             }
         }
