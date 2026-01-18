@@ -4,7 +4,7 @@ pipeline {
     environment {
         IMAGE_NAME = "flight-price-api"
         CONTAINER_NAME = "flight-price-ci-test"
-        APP_PORT = "8501"
+        APP_PORT = "8000"
     }
 
     stages {
